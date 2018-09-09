@@ -1,4 +1,4 @@
-A realtime whiteboard application, inspired from other socket.io applications, written in angular5 and nodejs
+A realtime whiteboard application, inspired from other socket.io applications, written in angular5, nodejs and mongoDB
 
 
 Steps to deploy the code:
