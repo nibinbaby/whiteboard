@@ -50,6 +50,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
   };
   prev: any;
   next: any;
+  currentX: any;
+  currentY: any;
+  shape: number = 0;
 
   // getting a reference to the overall list, which is the parent container of the list items
   @ViewChild(MatList, { read: ElementRef }) matList: ElementRef;
@@ -110,6 +113,13 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.saveBoardState();
   }
 
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event) {
+    this.currentX = event.clientX;
+    this.currentY = event.clientY;
+    this.socketService.setInitialCoords({'currentX':this.currentX, 'currentY':this.currentY});
+  }
+
   saveBoardState(){
     var whiteboardDraw = this.cx.canvas.toDataURL();
     this.http.post(SERVER_URL+'/board',{'name': 'whiteboard', 'board': whiteboardDraw }).subscribe(data => {
@@ -167,11 +177,38 @@ private drawOnCanvas(
 
   // we're drawing lines so we need a previous position
   if (prevPos) {
-    // sets the start point
-    this.cx.moveTo(prevPos.x, prevPos.y); // from
-    // draws a line from the start pos until the current position
-    this.cx.lineTo(currentPos.x, currentPos.y);
 
+    const rect =  this.canvas.nativeElement.getBoundingClientRect();
+    if(this.shape == 0){
+      // sets the start point
+      this.cx.moveTo(prevPos.x, prevPos.y); // from
+      // // draws a line from the start pos until the current position
+      this.cx.lineTo(currentPos.x, currentPos.y);
+    }
+    else if(this.shape == 1){
+      this.cx.clearRect(this.currentX- rect.left,this.currentY- rect.top,currentPos.x- (this.currentX- rect.left), currentPos.y- (this.currentY- rect.top));
+      this.cx.rect(this.currentX- rect.left,this.currentY- rect.top,currentPos.x- (this.currentX- rect.left), currentPos.y- (this.currentY- rect.top));
+    }
+    else if(this.shape == 2){
+      // this.cx.arc(this.currentX- rect.left,this.currentY- rect.top,currentPos.y- (this.currentY- rect.top),0,2*Math.PI);
+      var radius = (currentPos.x- (this.currentX- rect.left)) / 0.5 ;
+      this.cx.arc(this.currentX- rect.left,this.currentY- rect.top,radius,0,2*Math.PI);
+      // this.cx.beginPath();
+      this.cx.clearRect(this.currentX- rect.left - radius - 1, this.currentY- rect.top - radius - 1, radius * 2 + 2, radius * 2 + 2);
+      // this.cx.closePath();
+    }
+    else if(this.shape == 3){
+
+      var path=new Path2D();
+      path.moveTo((this.width/2)+50,this.height/2);
+      path.lineTo((this.width/2),(this.height/2)-50);
+      path.lineTo((this.width/2)-50,this.height/2);
+      this.cx.fill(path);
+    }
+    else if(this.shape == 4){
+      this.cx.moveTo(this.currentX- rect.left,this.currentY- rect.top);
+      this.cx.lineTo(currentPos.x, currentPos.y);
+    }
     // strokes the current path with the styles we set earlier
     this.cx.stroke();
   }
@@ -225,7 +262,16 @@ private drawOnCanvas(
     this.socketService.onCanvasClear()
       .subscribe((data: any) => {
           this.clearAll();
-      })
+      });
+    this.socketService.onSetShape()
+      .subscribe((data: any) => {
+          this.setItemShape(data);
+      });
+    this.socketService.onSetInitialCoords()
+      .subscribe((data: any) => {
+        this.currentX = data.currentX;
+        this.currentY = data.currentY;
+      });
   }
 
   private getRandomId(): number {
@@ -243,11 +289,39 @@ private drawOnCanvas(
   }
 
   public setPen(pencolor){
+    this.primitiveItem('none');
     if(pencolor == 0){
       this.socketService.setStrokeStyle({'strokeStyle':'#FFF', 'lineWidth': 6});
     }
     else if(pencolor == 1){
       this.socketService.setStrokeStyle({'strokeStyle':'#000', 'lineWidth': 3});
+    }
+  }
+
+  public primitiveItem(item){
+    this.setItemShape(item);
+    this.socketService.setShape(item);
+  }
+
+  public setItemShape(item){
+    if(item == 'rectangle'){
+      this.shape = 1;
+      this.socketService.setStrokeStyle({'strokeStyle':'#000', 'lineWidth': 3});
+    }
+    else if(item == 'circle'){
+      this.shape = 2;
+      this.socketService.setStrokeStyle({'strokeStyle':'#000', 'lineWidth': 3});
+    }
+    else if(item == 'triangle'){
+      this.shape = 3;
+      this.socketService.setStrokeStyle({'strokeStyle':'#000', 'lineWidth': 3});
+    }
+    else if(item == 'line'){
+      this.shape = 4;
+      this.socketService.setStrokeStyle({'strokeStyle':'#000', 'lineWidth': 3});
+    }
+    else{
+      this.shape = 0;
     }
   }
 

@@ -38,6 +38,28 @@ export class SocketService {
             this.socket.on('color', (data: any) => observer.next(data));
         });
     }
+    public setShape(data : Object): void {
+
+        this.socket.emit('shape', data);
+    }
+
+    public onSetShape(): Observable<Object> {
+
+        return new Observable<Object>(observer => {
+            this.socket.on('shape', (data: any) => observer.next(data));
+        });
+    }
+    public setInitialCoords(data : Object): void {
+
+        this.socket.emit('coords', data);
+    }
+
+    public onSetInitialCoords(): Observable<Object> {
+
+        return new Observable<Object>(observer => {
+            this.socket.on('coords', (data: any) => observer.next(data));
+        });
+    }
 
     public clearCanvas(): void {
 

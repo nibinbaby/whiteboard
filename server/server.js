@@ -75,6 +75,16 @@ io.on("connection", (socket) => {
         console.log('[server:node](color): %s', JSON.stringify(m));
         io.emit('color', m);
     });
+    socket.on('shape', (m) => {
+
+        console.log('[server:node](shape): %s', JSON.stringify(m));
+        io.emit('shape', m);
+    });
+    socket.on('coords', (m) => {
+
+        console.log('[server:node](coords): %s', JSON.stringify(m));
+        io.emit('coords', m);
+    });
 
     socket.on('clear', () => {
 
