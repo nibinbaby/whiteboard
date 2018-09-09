@@ -1,0 +1,50 @@
+
+[mat-fab] {
+    position: absolute;
+    right: 2%;
+    top: 35px;
+    z-index: 1;
+}
+
+.board-container {
+    position: relative;
+    width: 30%;
+    height: 100%;float: left;
+}
+.canvas-container{
+  width: 70%;
+  height: 100%;
+  position: relative;float: right;
+}
+
+.board-input {
+    padding-top: 20px;
+    width: 80%;
+}
+
+.board-list {
+}
+
+.board-list-item {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border-radius: 5px;
+    background-color: #E8EAF6;
+}
+
+.main-card {
+    height: 100%;
+}
+
+.board-footer-container {
+    position:fixed;
+    bottom:25px;
+    left:25px;
+    right:25px;
+}
+
+.board-notification {
+    text-align: center;
+}
+mat-list{display: inline-block;}
+mat-list-item{float: left;}

@@ -1,0 +1,7 @@
+ .app-content {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+.primary-content{flex: 1 1 auto;}
+.btn{cursor: pointer;}

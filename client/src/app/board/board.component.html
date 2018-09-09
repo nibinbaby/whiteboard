@@ -1,0 +1,41 @@
+
+<div>
+<div class="board-container">
+  <mat-card class="main-card">
+    <mat-list class="board-list">
+      <mat-list-item *ngFor="let message of messages" [ngClass]="[(message.action === undefined && message.from.id === user.id)? 'board-list-item': '']">
+        <img mat-list-avatar *ngIf="message.action === undefined" [src]="message.from.avatar">
+        <h4 mat-line *ngIf="message.action === undefined">
+          <b>{{message.from.name}}</b>
+        </h4>
+        <p mat-line *ngIf="message.action === undefined">
+          <span> {{message.content}} </span>
+        </p>
+        <p mat-line *ngIf="message.action === action.JOINED" class="board-notification">
+          <span> <b>{{message.from.name}}</b> is now viewing the whiteboard. </span>
+        </p>
+        <p mat-line *ngIf="message.action === action.RENAME" class="board-notification">
+          <span> <b>{{message.content.previousUsername}}</b> is now <b>{{message.content.username}}</b> </span>
+        </p>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+</div>
+<div class="canvas-container">
+
+  <mat-card>
+    <canvas #canvas></canvas>
+    <mat-list>
+      <mat-list-item>
+        <button mat-raised-button (click)="setPen(1)">Pen</button>
+      </mat-list-item>
+      <mat-list-item>
+        <button mat-raised-button (click)="setPen(0)">Eraser</button>
+      </mat-list-item>
+      <mat-list-item>
+        <button mat-raised-button (click)="clearCanvas()">Clear board</button>
+      </mat-list-item>
+    </mat-list>
+  </mat-card>
+</div>
+</div>
